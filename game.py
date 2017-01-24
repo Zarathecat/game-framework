@@ -22,7 +22,6 @@ except:
 from charas import *
 from map1 import *
 from map2 import *  # test
-import os
 from player import player
 import pygame
 from pygame.locals import *
@@ -48,50 +47,77 @@ basic_font = pygame.font.SysFont(None, 20)
 # placement of walls
 chosen_map = map1
 
+def check_walls_collision(x, y):
+    for rect in chosen_map.rects:
+        rect = pygame.Rect(rect)
+        if rect.collidepoint(x, y):
+            return True
+    return False
+
+
+def check_for_collision(chara, direction):
+    """ check for a collision between a character and any screen edges
+       or walls. If chara hits screen edge, it sets chara's position
+       to the screen edge."""
+
+    chara_x = chara.location[0]
+    chara_y = chara.location[1]
+
+    collide = False
+    up_check = chara_y - chara.movespeed
+    down_check = chara_y + chara.movespeed
+    left_check = chara_x - chara.movespeed
+    right_check = chara_x + chara.movespeed
+
+    if direction == UP:
+        # screen edge
+        if up_check > 0:
+            # walls
+            collide = check_walls_collision(chara_x, up_check)
+        else:
+            chara.location[1] = 0
+            collide = True
+
+    elif direction == DOWN:
+        if down_check < ROWS:
+            collide = check_walls_collision(chara_x, down_check)
+        else:
+            collide = True
+            chara.location[1] = ROWS -1
+
+    elif direction == LEFT:
+        if left_check > 0:
+            collide = check_walls_collision(left_check, chara_y)
+        else:
+            collide = True
+            chara.location[0] = 0
+
+    elif direction == RIGHT:
+        if right_check < COLUMNS:
+            collide = check_walls_collision(right_check, chara_y)
+        else:
+            collide = True
+            chara.location[0] = COLUMNS - 1
+
+    return collide
+
+
 # moves character as long as they will not end up offscreen
 def move_character(chara, direction):
     chara_x = chara.location[0]
     chara_y = chara.location[1]
-    if direction == UP:
-        # check character won't go off top of screen
-        if chara_y - chara.movespeed > -chara.movespeed:
-            # check for wall collision. only move chara if not
-            for rect in chosen_map.rects:
-                rect = pygame.Rect(rect)
-                if rect.collidepoint(chara_x, chara_y - chara.movespeed):
-                    break
-            else:
-                chara.location[1] = chara_y - chara.movespeed
+    if check_for_collision(chara, direction) == False:
+        if direction == UP:
+            chara.location[1] = chara_y - chara.movespeed
 
-    elif direction == DOWN:
-        # check chara won't go off bottom of screen
-        if chara_y + chara.movespeed < ROWS:
-            for rect in chosen_map.rects:
-                rect = pygame.Rect(rect)
-                if rect.collidepoint(chara_x, chara_y + chara.movespeed):
-                    break
-            else:
-                chara.location[1] = chara_y + chara.movespeed
+        elif direction == DOWN:
+            chara.location[1] = chara_y + chara.movespeed
 
-    elif direction == LEFT:
-        # check won't go off left
-        if chara_x - chara.movespeed > -chara.movespeed:
-            for rect in chosen_map.rects:
-                rect = pygame.Rect(rect)
-                if rect.collidepoint(chara_x - chara.movespeed, chara_y):
-                    break
-            else:
-                chara.location[0] = chara_x - chara.movespeed
+        elif direction == LEFT:
+            chara.location[0] = chara_x - chara.movespeed
 
-    elif direction == RIGHT:
-        #check won't go off right
-        if chara_x + chara.movespeed < ROWS:
-            for rect in chosen_map.rects:
-                rect = pygame.Rect(rect)
-                if rect.collidepoint(chara_x + chara.movespeed, chara_y):
-                    break
-            else:
-                chara.location[0] = chara_x + chara.movespeed
+        elif direction == RIGHT:
+            chara.location[0] = chara_x + chara.movespeed
 
     return chara.location
 
