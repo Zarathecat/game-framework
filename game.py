@@ -44,10 +44,7 @@ pygame.mouse.set_visible(False)
 
 basic_font = pygame.font.SysFont(None, 20)
 
-# placement of walls
-chosen_map = map1
-
-def check_walls_collision(x, y):
+def check_walls_collision(x, y, chosen_map):
     for rect in chosen_map.rects:
         rect = pygame.Rect(rect)
         if rect.collidepoint(x, y):
@@ -55,7 +52,7 @@ def check_walls_collision(x, y):
     return False
 
 
-def check_for_collision(chara, direction):
+def check_for_collision(chara, direction, chosen_map):
     """ check for a collision between a character and any screen edges
        or walls. If chara hits screen edge, it sets chara's position
        to the screen edge."""
@@ -63,40 +60,40 @@ def check_for_collision(chara, direction):
     chara_x = chara.location[0]
     chara_y = chara.location[1]
 
-    collide = False
+    collide = True
     up_check = chara_y - chara.movespeed
     down_check = chara_y + chara.movespeed
     left_check = chara_x - chara.movespeed
     right_check = chara_x + chara.movespeed
 
     if direction == UP:
-        # screen edge
+        # if y coord doesn't collide with screen upper edge...
         if up_check > 0:
-            # walls
-            collide = check_walls_collision(chara_x, up_check)
+            # check for wall collision with x coord and new y coord
+            collide = check_walls_collision(chara_x, up_check, chosen_map)
+        # if y coord collides with screen upper edge...
         else:
+            # set character's y coordinate to equal the screen upper edge.
+            # it's a bit weird putting this in the same function, but
+            # not sure how to split it out neatly yet
             chara.location[1] = 0
-            collide = True
 
     elif direction == DOWN:
         if down_check < ROWS:
-            collide = check_walls_collision(chara_x, down_check)
+            collide = check_walls_collision(chara_x, down_check, chosen_map)
         else:
-            collide = True
             chara.location[1] = ROWS -1
 
     elif direction == LEFT:
         if left_check > 0:
-            collide = check_walls_collision(left_check, chara_y)
+            collide = check_walls_collision(left_check, chara_y, chosen_map)
         else:
-            collide = True
             chara.location[0] = 0
 
     elif direction == RIGHT:
         if right_check < COLUMNS:
-            collide = check_walls_collision(right_check, chara_y)
+            collide = check_walls_collision(right_check, chara_y, chosen_map)
         else:
-            collide = True
             chara.location[0] = COLUMNS - 1
 
     return collide
@@ -106,18 +103,18 @@ def check_for_collision(chara, direction):
 def move_character(chara, direction):
     chara_x = chara.location[0]
     chara_y = chara.location[1]
-    if check_for_collision(chara, direction) == False:
-        if direction == UP:
-            chara.location[1] = chara_y - chara.movespeed
 
-        elif direction == DOWN:
-            chara.location[1] = chara_y + chara.movespeed
+    if direction == UP:
+        chara.location[1] = chara_y - chara.movespeed
 
-        elif direction == LEFT:
-            chara.location[0] = chara_x - chara.movespeed
+    elif direction == DOWN:
+        chara.location[1] = chara_y + chara.movespeed
 
-        elif direction == RIGHT:
-            chara.location[0] = chara_x + chara.movespeed
+    elif direction == LEFT:
+        chara.location[0] = chara_x - chara.movespeed
+
+    elif direction == RIGHT:
+        chara.location[0] = chara_x + chara.movespeed
 
     return chara.location
 
@@ -134,24 +131,32 @@ def get_dimensions(x, y, size):
     chara_dimensions = chara_x_pos, chara_y_pos, chara_scaled, chara_scaled
     return chara_dimensions
     
+# stub of a function for changing maps; might get bigger, might not.
+def change_map(new_map):
+    chosen_map = new_map
+    return chosen_map
 
 def main():
     player.location = [COLUMNS/2, ROWS-1]  # player starts at bottom
 
     direction = ''
 
+    # placement of walls. start with map1
+    chosen_map = map1 #test
+
     while True:
+        print chosen_map
 
         window_surface.fill(BLACK)
         for wall in chosen_map.walls:
-            pygame.draw.rect(window_surface, chosen_map.colour, (wall)) #test
+            pygame.draw.rect(window_surface, chosen_map.colour, (wall))
 
 
         player_x = player.location[0]
         player_y = player.location[1]
         player_rect = pygame.Rect(player_x, player_y, player.size, player.size)
         player_dimensions = get_dimensions(player_x, player_y, player.size)
-        pygame.draw.rect(window_surface, BRIGHTGREEN, (player_dimensions))
+        pygame.draw.rect(window_surface, player.colour, (player_dimensions))
 
 
         for event in pygame.event.get():
@@ -174,7 +179,8 @@ def main():
             elif 1 not in pygame.key.get_pressed():
                 direction = ""
 
-        move_character(player, direction)
+        if check_for_collision(player, direction, chosen_map) == False:
+            move_character(player, direction)
 
         for chara in charas:
 
@@ -194,6 +200,19 @@ def main():
 
             if chara_rect.colliderect(player_rect):
                 window_surface.blit(text_surf, text_rect)
+
+            # testing some doors.
+            door_rect = 30, 30, 6, 3
+            draw_door = 300, 300, 60, 30
+            pygame.draw.rect(window_surface, GREEN, (draw_door))
+            gate_rect = 10, 10, 6, 3
+            draw_gate = 100, 100, 60, 30
+            pygame.draw.rect(window_surface, BLUE, (draw_gate))
+            print chara_rect, door_rect, gate_rect
+            if player_rect.colliderect(door_rect):
+                chosen_map = change_map(map2)
+            if player_rect.colliderect(gate_rect):
+                chosen_map = change_map(map1)
 
         pygame.display.update()
         main_clock.tick(FPS)
