@@ -145,8 +145,6 @@ def main():
     chosen_map = map1 #test
 
     while True:
-        print chosen_map
-
         window_surface.fill(BLACK)
         for wall in chosen_map.walls:
             pygame.draw.rect(window_surface, chosen_map.colour, (wall))
@@ -208,7 +206,6 @@ def main():
             gate_rect = 10, 10, 6, 3
             draw_gate = 100, 100, 60, 30
             pygame.draw.rect(window_surface, BLUE, (draw_gate))
-            print chara_rect, door_rect, gate_rect
             if player_rect.colliderect(door_rect):
                 chosen_map = change_map(map2)
             if player_rect.colliderect(gate_rect):
