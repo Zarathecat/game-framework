@@ -38,7 +38,7 @@ map2.rects = [(3, 3, 1, (ROWS-CELLSIZE/2)),
          ]
 
 left_door_rect = (0, (ROWS/2), 1, 3)
-right_door_rect = (49, (ROWS/2), 1, 3)
+right_door_rect = (COLUMNS-1, (ROWS/2), 1, 3)
 
 map2_walls = []
 
