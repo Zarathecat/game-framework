@@ -19,7 +19,6 @@ try:
     from conf import *
 except:
     from sampleconf import *
-from charas import *
 from map1 import *
 from map2 import *  # test
 from player import player
@@ -99,7 +98,6 @@ def check_for_collision(chara, direction, chosen_map):
     return collide
 
 
-# moves character as long as they will not end up offscreen
 def move_character(chara, direction):
     chara_x = chara.location[0]
     chara_y = chara.location[1]
@@ -130,10 +128,13 @@ def get_dimensions(x, y, size):
     chara_scaled = size * CELLSIZE
     chara_dimensions = chara_x_pos, chara_y_pos, chara_scaled, chara_scaled
     return chara_dimensions
+
+map_list = {'map1': map1, 'map2': map2}
     
-# stub of a function for changing maps; might get bigger, might not.
 def change_map(new_map):
-    chosen_map = new_map
+    for key, value in map_list.iteritems():
+        if new_map == key:
+            chosen_map =value
     return chosen_map
 
 def main():
@@ -180,7 +181,7 @@ def main():
         if check_for_collision(player, direction, chosen_map) == False:
             move_character(player, direction)
 
-        for chara in charas:
+        for chara in chosen_map.characters:
 
             # this currently won't handle long lines very well. or at all.
             chara_text = chara.catchphrase
@@ -199,17 +200,35 @@ def main():
             if chara_rect.colliderect(player_rect):
                 window_surface.blit(text_surf, text_rect)
 
-            # testing some doors.
-            door_rect = 30, 30, 6, 3
-            draw_door = 300, 300, 60, 30
-            pygame.draw.rect(window_surface, GREEN, (draw_door))
-            gate_rect = 10, 10, 6, 3
-            draw_gate = 100, 100, 60, 30
-            pygame.draw.rect(window_surface, BLUE, (draw_gate))
-            if player_rect.colliderect(door_rect):
-                chosen_map = change_map(map2)
-            if player_rect.colliderect(gate_rect):
-                chosen_map = change_map(map1)
+            # doors on right and left of screen. This should be tidied...
+            # The door rect is the drawn rect /10 .
+            # This code is longwinded. Where the player goes depends
+            # on the 'direction' of the door, and we don't expect more doors
+            # than 'right left up down' for now. The data structure for doors
+            # should change when we do.
+            right_door_rect = chosen_map.right_door['rect']
+            draw_right_door = chosen_map.right_door['drawn']
+            pygame.draw.rect(window_surface, GREEN, (draw_right_door))
+            left_door_rect = chosen_map.left_door['rect']
+            draw_left_door = chosen_map.left_door['drawn']
+            pygame.draw.rect(window_surface, BLUE, (draw_left_door))
+
+            # if player hits a door, go to different specified map, and move
+            # player to opposite side of screen (to give illusion of travel).
+            if player_rect.colliderect(right_door_rect):
+                old_map = chosen_map
+                chosen_map = change_map(old_map.right_door['dest_map'])
+                # we send player to left of screen, though not all the way
+                # to the left, as otherwise they'll end up trapped flipping
+                # between the two doors. So the player rect starts where the
+                # door rect ends.
+                player.location[0] = COLUMNS - right_door_rect[0]
+            if player_rect.colliderect(left_door_rect):
+                old_map = chosen_map
+                chosen_map = change_map(old_map.left_door['dest_map'])
+                left_door_width = left_door_rect[3]
+                right_of_map = left_door_rect[0] + left_door_width
+                player.location[0] = COLUMNS - right_of_map
 
         pygame.display.update()
         main_clock.tick(FPS)

@@ -19,3 +19,8 @@ class Map():
         self.walls = [(0, 0, 0,0), (0,0,0,0) ] #rects for drawing
         self.rects = [(0, 0, 0, 0), (0,0,0,0)] #rects for collision detection
         self.colour = ''
+        self.right_door = {'rect': (0,0,0,0), 'drawn': (0,0,0,0),
+                           'dest_map' : ''}
+        self.left_door = {'rect': (0,0,0,0), 'drawn': (0,0,0,0),
+                           'dest_map' : ''}
+        self.characters = []

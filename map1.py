@@ -17,6 +17,7 @@
 from maps import *
 from sampleconf import *
 from colours import *
+from charas import *  # should be restructured so these aren't imported.
 
 map1 = Map()
 
@@ -52,6 +53,8 @@ map1.walls = [(leftmost, uppermost, wall_width, wall_vertical_length),
                    (5, 450, 410, 10)]
     To give the screen a nice border wall. """
 
+right_drawn_door = (495, (ROWS/2)*CELLSIZE, 10, 30)
+
 def walls_to_rects((a, b, c, d)):
     a = a/10
     b = b/10
@@ -67,4 +70,9 @@ for wall in map1.walls:
 
 map1.rects = map1_rects
 
+door_rect = walls_to_rects(right_drawn_door)
+map1.right_door = {'rect': door_rect, 'drawn': right_drawn_door,
+                   'dest_map': 'map2'}
 map1.colour = YELLOW
+
+map1.characters = [heroine, tiger]

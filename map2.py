@@ -17,6 +17,7 @@
 from maps import *
 from sampleconf import *
 from colours import *
+from charas import *
 
 map2 = Map()
 
@@ -37,6 +38,8 @@ map2.walls = [(30, 30, CELLSIZE, (ROWS-CELLSIZE/2) * CELLSIZE),
           (COLUMNS/5, ROWS, (COLUMNS-CELLSIZE), CELLSIZE)
          ]
 
+left_drawn_door = (0, (ROWS/2) * CELLSIZE, 10, 30)
+
 def walls_to_rects((a, b, c, d)):
     a = a/10
     b = b/10
@@ -53,3 +56,9 @@ for wall in map2.walls:
 map2.rects = map2_rects
 
 map2.colour = DARKGREY
+
+door_rect = walls_to_rects(left_drawn_door)
+map2.left_door = {'rect': door_rect, 'drawn': left_drawn_door,
+                  'dest_map': 'map1'}
+
+map2.characters = [dude]
