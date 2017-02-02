@@ -21,6 +21,7 @@ except:
     from sampleconf import *
 from map1 import *
 from map2 import *  # test
+from map3 import *
 from player import player
 import pygame
 from pygame.locals import *
@@ -129,7 +130,7 @@ def get_dimensions(x, y, size):
     chara_dimensions = chara_x_pos, chara_y_pos, chara_scaled, chara_scaled
     return chara_dimensions
 
-map_list = {'map1': map1, 'map2': map2}
+map_list = {'map1': map1, 'map2': map2, 'map3': map3}
     
 def change_map(new_map):
     for key, value in map_list.iteritems():
@@ -149,7 +150,6 @@ def main():
         window_surface.fill(BLACK)
         for wall in chosen_map.walls:
             pygame.draw.rect(window_surface, chosen_map.colour, (wall))
-
 
         player_x = player.location[0]
         player_y = player.location[1]
@@ -200,35 +200,35 @@ def main():
             if chara_rect.colliderect(player_rect):
                 window_surface.blit(text_surf, text_rect)
 
-            # doors on right and left of screen. This should be tidied...
-            # The door rect is the drawn rect /10 .
-            # This code is longwinded. Where the player goes depends
-            # on the 'direction' of the door, and we don't expect more doors
-            # than 'right left up down' for now. The data structure for doors
-            # should change when we do.
-            right_door_rect = chosen_map.right_door['rect']
-            draw_right_door = chosen_map.right_door['drawn']
-            pygame.draw.rect(window_surface, GREEN, (draw_right_door))
-            left_door_rect = chosen_map.left_door['rect']
-            draw_left_door = chosen_map.left_door['drawn']
-            pygame.draw.rect(window_surface, GREEN, (draw_left_door))
+        # doors on right and left of screen. This should be tidied...
+        # The door rect is the drawn rect /10 .
+        # This code is longwinded. Where the player goes depends
+        # on the 'direction' of the door, and we don't expect more doors
+        # than 'right left up down' for now. The data structure for doors
+        # should change when we do.
+        right_door_rect = chosen_map.right_door['rect']
+        draw_right_door = chosen_map.right_door['drawn']
+        pygame.draw.rect(window_surface, GREEN, (draw_right_door))
+        left_door_rect = chosen_map.left_door['rect']
+        draw_left_door = chosen_map.left_door['drawn']
+        pygame.draw.rect(window_surface, GREEN, (draw_left_door))
 
-            # if player hits a door, go to different specified map, and move
-            # player to opposite side of screen (to give illusion of travel).
-            if player_rect.colliderect(right_door_rect):
-                old_map = chosen_map
-                chosen_map = change_map(old_map.right_door['dest_map'])
-                # we send player to left of screen, though not all the way
-                # to the left, as otherwise they'll end up trapped flipping
-                # between the two doors. So the player rect starts where the
-                # door rect ends.
-                player.location[0] = COLUMNS - right_door_rect[0]
-            if player_rect.colliderect(left_door_rect):
-                old_map = chosen_map
-                chosen_map = change_map(old_map.left_door['dest_map'])
-                left_door_width = left_door_rect[3]
-                right_of_map = left_door_rect[0] + left_door_width
-                player.location[0] = COLUMNS - right_of_map
+        # if player hits a door, go to different specified map, and move
+        # player to opposite side of screen (to give illusion of travel).
+        if player_rect.colliderect(right_door_rect):
+            old_map = chosen_map
+            chosen_map = change_map(old_map.right_door['dest_map'])
+            # we send player to left of screen, though not all the way
+            # to the left, as otherwise they'll end up trapped flipping
+            # between the two doors. So the player rect starts where the
+            # door rect ends.
+            player.location[0] = COLUMNS - right_door_rect[0]
+        if player_rect.colliderect(left_door_rect):
+            old_map = chosen_map
+            chosen_map = change_map(old_map.left_door['dest_map'])
+            left_door_width = left_door_rect[3]
+            right_of_map = left_door_rect[0] + left_door_width
+            player.location[0] = COLUMNS - right_of_map
 
         pygame.display.update()
         main_clock.tick(FPS)

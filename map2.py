@@ -38,6 +38,7 @@ map2.rects = [(3, 3, 1, (ROWS-CELLSIZE/2)),
          ]
 
 left_door_rect = (0, (ROWS/2), 1, 3)
+right_door_rect = (49, (ROWS/2), 1, 3)
 
 map2_walls = []
 
@@ -50,7 +51,10 @@ map2.walls = map2_walls
 map2.colour = DARKGREY
 
 left_door_drawn = map2.rects_to_walls(left_door_rect, CELLSIZE)
+right_door_drawn = map2.rects_to_walls(right_door_rect, CELLSIZE)
 map2.left_door = {'rect': left_door_rect, 'drawn': left_door_drawn,
                   'dest_map': 'map1'}
+map2.right_door = {'rect': right_door_rect, 'drawn': right_door_drawn,
+                   'dest_map': 'map3'}
 
 map2.characters = [dude]

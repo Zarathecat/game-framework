@@ -29,12 +29,12 @@ map1 = Map()
 # walls are areas which the player cannot cross. They are
 # rects.
 
-leftmost = 1
+leftmost = 2 # '2' so that player doesn't walk through door straight onto wall
 uppermost = 1
 wall_width = 1
 wall_vertical_length = (ROWS-CELLSIZE/2)
-wall_horizontal_length = (COLUMNS-CELLSIZE/2)
-rightmost = wall_horizontal_length
+wall_horizontal_length = (COLUMNS-CELLSIZE/2) - 1
+rightmost = wall_horizontal_length +1
 lowest = wall_vertical_length
 gap_size = 4
 
@@ -49,13 +49,14 @@ map1.rects = [(leftmost, uppermost, wall_width, wall_vertical_length),
           (rightmost, uppermost, wall_width, wall_vertical_length - gap_size),
           (leftmost, lowest, wall_horizontal_length- gap_size, wall_width)
          ]
-""" The above is: [(1, 1, 1, 45),
-                   (1, 1, 45, 1),
+""" The above is: [(2, 1, 1, 45),
+                   (2, 1, 44, 1),
                    (45, 1, 1, 41),
-                   (1, 45, 41, 1)]
+                   (2, 45, 40, 1)]
     To give the screen a nice border wall. """
 
 right_door_rect = (right_door_x, right_door_y, door_width, door_height)
+left_door_rect = (0, (ROWS/2), 1, 3)
 
 map1_walls = []
 
@@ -65,8 +66,11 @@ for rect in map1.rects:
 
 map1.walls = map1_walls
 right_door_drawn = map1.rects_to_walls(right_door_rect, CELLSIZE)
+left_door_drawn = map1.rects_to_walls(left_door_rect, CELLSIZE)
 map1.right_door = {'rect': right_door_rect, 'drawn': right_door_drawn,
                    'dest_map': 'map2'}
+map1.left_door = {'rect': left_door_rect, 'drawn': left_door_drawn,
+                  'dest_map': 'map3'}
 map1.colour = YELLOW
 
 map1.characters = [heroine, tiger]
