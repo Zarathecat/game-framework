@@ -211,7 +211,7 @@ def main():
             pygame.draw.rect(window_surface, GREEN, (draw_right_door))
             left_door_rect = chosen_map.left_door['rect']
             draw_left_door = chosen_map.left_door['drawn']
-            pygame.draw.rect(window_surface, BLUE, (draw_left_door))
+            pygame.draw.rect(window_surface, GREEN, (draw_left_door))
 
             # if player hits a door, go to different specified map, and move
             # player to opposite side of screen (to give illusion of travel).

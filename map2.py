@@ -27,38 +27,30 @@ map2 = Map()
 # 50 rows
 # and a cell is 10 px in size.
 # so the screen is 500 by 500.
-# map.wall coordinate/cellsize needs to be an int.
 
 # walls are areas which the player cannot cross. They are
 # rects.
 
-map2.walls = [(30, 30, CELLSIZE, (ROWS-CELLSIZE/2) * CELLSIZE),
-          (COLUMNS, 30, (COLUMNS-CELLSIZE/2) * CELLSIZE, CELLSIZE),
-          (COLUMNS * CELLSIZE, ROWS, CELLSIZE, (ROWS-CELLSIZE) * CELLSIZE),
-          (COLUMNS/5, ROWS, (COLUMNS-CELLSIZE), CELLSIZE)
+map2.rects = [(3, 3, 1, (ROWS-CELLSIZE/2)),
+          (5, 3, (COLUMNS-CELLSIZE/2), 1),
+          (COLUMNS, 5, 1, (ROWS-CELLSIZE)),
+          (1, 5, 4, 1)
          ]
 
-left_drawn_door = (0, (ROWS/2) * CELLSIZE, 10, 30)
+left_door_rect = (0, (ROWS/2), 1, 3)
 
-def walls_to_rects((a, b, c, d)):
-    a = a/10
-    b = b/10
-    c = c/10
-    d = d/10
-    return (a, b, c, d)
+map2_walls = []
 
-map2_rects = []
+for rect in map2.rects:
+    map2_wall = map2.rects_to_walls(rect, CELLSIZE)
+    map2_walls.append(map2_wall)
 
-for wall in map2.walls:
-    map2_rect = walls_to_rects(wall)
-    map2_rects.append(map2_rect)
-
-map2.rects = map2_rects
+map2.walls = map2_walls
 
 map2.colour = DARKGREY
 
-door_rect = walls_to_rects(left_drawn_door)
-map2.left_door = {'rect': door_rect, 'drawn': left_drawn_door,
+left_door_drawn = map2.rects_to_walls(left_door_rect, CELLSIZE)
+map2.left_door = {'rect': left_door_rect, 'drawn': left_door_drawn,
                   'dest_map': 'map1'}
 
 map2.characters = [dude]

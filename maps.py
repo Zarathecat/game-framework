@@ -24,3 +24,10 @@ class Map():
         self.left_door = {'rect': (0,0,0,0), 'drawn': (0,0,0,0),
                            'dest_map' : ''}
         self.characters = []
+
+    def rects_to_walls(self, (a, b, c, d), cellsize):
+        a = a*cellsize
+        b = b*cellsize
+        c = c*cellsize
+        d = d*cellsize
+        return (a, b, c, d)

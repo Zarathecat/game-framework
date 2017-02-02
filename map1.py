@@ -29,49 +29,43 @@ map1 = Map()
 # walls are areas which the player cannot cross. They are
 # rects.
 
-# When divided by CELLSIZE, all points must be ints, or graphics
-# will not correspond to underlying map, and collisions will look
-# weird.
-
-leftmost = COLUMNS/ (CELLSIZE/2)
-uppermost = ROWS/ (CELLSIZE/2)
-wall_width = CELLSIZE
-wall_vertical_length = (ROWS-CELLSIZE/2) * CELLSIZE
-wall_horizontal_length = (COLUMNS-CELLSIZE/2) * CELLSIZE
+leftmost = 1
+uppermost = 1
+wall_width = 1
+wall_vertical_length = (ROWS-CELLSIZE/2)
+wall_horizontal_length = (COLUMNS-CELLSIZE/2)
 rightmost = wall_horizontal_length
 lowest = wall_vertical_length
-gap_size = 4 * CELLSIZE
+gap_size = 4
 
-map1.walls = [(leftmost, uppermost, wall_width, wall_vertical_length),
+right_door_x = COLUMNS - 1
+right_door_y = ROWS/2
+door_width = 1
+door_height = 3
+
+# map rects are later multipled by 10 to get drawn coordinates
+map1.rects = [(leftmost, uppermost, wall_width, wall_vertical_length),
           (leftmost, uppermost, wall_horizontal_length, wall_width),
           (rightmost, uppermost, wall_width, wall_vertical_length - gap_size),
           (leftmost, lowest, wall_horizontal_length- gap_size, wall_width)
          ]
-""" The above is: [(5, 5, 10, 450), 
-                   (5, 5, 450, 10),
-                   (450, 5, 10, 410),
-                   (5, 450, 410, 10)]
+""" The above is: [(1, 1, 1, 45),
+                   (1, 1, 45, 1),
+                   (45, 1, 1, 41),
+                   (1, 45, 41, 1)]
     To give the screen a nice border wall. """
 
-right_drawn_door = (495, (ROWS/2)*CELLSIZE, 10, 30)
+right_door_rect = (right_door_x, right_door_y, door_width, door_height)
 
-def walls_to_rects((a, b, c, d)):
-    a = a/10
-    b = b/10
-    c = c/10
-    d = d/10
-    return (a, b, c, d)
+map1_walls = []
 
-map1_rects = []
+for rect in map1.rects:
+    map1_wall = map1.rects_to_walls(rect, CELLSIZE)
+    map1_walls.append(map1_wall)
 
-for wall in map1.walls:
-    map1_rect = walls_to_rects(wall)
-    map1_rects.append(map1_rect)
-
-map1.rects = map1_rects
-
-door_rect = walls_to_rects(right_drawn_door)
-map1.right_door = {'rect': door_rect, 'drawn': right_drawn_door,
+map1.walls = map1_walls
+right_door_drawn = map1.rects_to_walls(right_door_rect, CELLSIZE)
+map1.right_door = {'rect': right_door_rect, 'drawn': right_door_drawn,
                    'dest_map': 'map2'}
 map1.colour = YELLOW
 
