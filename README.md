@@ -8,7 +8,7 @@ It includes:
     * A grid with configurable width, height and cellsize,
     * Some configurable walls, collision detection between these
       and the player, and the inability to walk through them
-    * 2 sample maps, with different walls, which include doors through
+    * 3 sample maps, with different walls, which include doors through
       which the player can move to change to a different map and move
       to the relevant place on the screen
     * Basic character objects with collision detection and text
